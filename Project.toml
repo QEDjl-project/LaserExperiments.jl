@@ -1,0 +1,7 @@
+name = "LaserExperiments"
+uuid = "eb1875a3-6e0d-577e-a250-3e610cb08925"
+authors = ["Uwe Hernandez Acosta <u.hernandez@hzdr.de>"]
+version = "0.1.0"
+
+[compat]
+julia = "1.10"

@@ -1,0 +1,40 @@
+# Changes here will be overwritten by Copier
+AddAllcontributors: false
+AddCitationCFF: false
+AddCodeOfConduct: true
+AddCompatHelperCI: true
+AddContributionDocs: true
+AddCopierCI: false
+AddDependabot: true
+AddDocs: true
+AddDocsCI: true
+AddFormatterAndLinterConfigFiles: true
+AddGitHubPRTemplate: true
+AddGitHubTemplates: false
+AddLintCI: false
+AddLychee: false
+AddMacToCI: true
+AddPrecommit: true
+AddTagBotCI: true
+AddTestCI: true
+AddWinToCI: false
+Authors: Uwe Hernandez Acosta <u.hernandez@hzdr.de>
+AutoIncludeTests: true
+CheckExplicitImports: false
+CodeOfConductContact: u.hernandez@hzdr.de
+ConfigIndentation: 2
+JuliaIndentation: 4
+JuliaMinCIVersion: lts
+JuliaMinVersion: '1.10'
+License: MIT
+LicenseCopyrightHolders: Uwe Hernandez Acosta
+MarkdownIndentation: 2
+PackageName: LaserExperiments
+PackageOwner: QEDjl-project
+PackageUUID: eb1875a3-6e0d-577e-a250-3e610cb08925
+RunJuliaNightlyOnCI: false
+StrategyConfirmIncluded: true
+StrategyLevel: 2
+StrategyReviewExcluded: true
+UseCirrusCI: false
+_src_path: /Users/uwe/.julia/packages/BestieTemplate/jdG8v
