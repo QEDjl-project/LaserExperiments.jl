@@ -1,13 +1,12 @@
 module LaserExperiments
 
-# I am a test
+hello_world() = "Hello, World!"
 
-"""
-    hi = hello_world()
-A simple function to return "Hello, World!"
-"""
-function hello_world()
-    return "Hello, World!"
-end
+using Unitful
+using StaticArrays
+
+abstract type AbstractBeam end
+
+include("beams/laser.jl")
 
 end

@@ -3,5 +3,11 @@ uuid = "eb1875a3-6e0d-577e-a250-3e610cb08925"
 authors = ["Uwe Hernandez Acosta <u.hernandez@hzdr.de>"]
 version = "0.1.0"
 
+[deps]
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [compat]
+StaticArrays = "1.9.15"
+Unitful = "1.25.0"
 julia = "1.10"
