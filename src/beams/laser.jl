@@ -1,7 +1,27 @@
-# TODO: use internal unit system to avoid these constants
-
 abstract type AbstractLaserBeam <: AbstractBeam end
+"""
 
+    struct LaserBeam{T} <: AbstractLaserBeam
+    LaserBeam(a0, omega, alpha)
+
+Representation of a monochromatic plane-wave laser beam.
+
+## Fields
+- `a0::T`: Dimensionless classical nonlinearity parameter (laser strength parameter).
+- `omega::Quantity{T}`: Photon energy (in eV).
+- `alpha::T`: Polar angle (in radians) defining the laser propagation direction.
+
+## Construction
+
+A new LaserBeam can be created via the outer constructor laserbeam.
+The inner constructor performs sanity checks and unit normalization.
+
+## Example
+
+```
+L = LaserBeam(1.0, 1.55u"eV", π/4)
+```
+"""
 struct LaserBeam{T} <: AbstractLaserBeam
     a0::T
     omega::Quantity{T}
@@ -40,6 +60,7 @@ function _unit_vec(polar, azimuth = zero(polar))
     )
 end
 
+# see https://en.wikipedia.org/wiki/Spherical_coordinates
 function _safe_polar_angle(unit_vector::SVector{3, T}) where {T}
 
     x, y, z = unit_vector
@@ -52,6 +73,66 @@ function _safe_polar_angle(unit_vector::SVector{3, T}) where {T}
 
     return z > zero(z) ? T(rad) : T(pi + rad)
 end
+
+"""
+    laserbeam(; a0, intensity, wavelength, frequency, photon_energy, alpha, unit_wavevector, omega)
+
+Create a [`LaserBeam`](@ref) object from a set of physically meaningful parameters.
+
+This high-level constructor allows flexible initialization from either the laser’s
+field strength (`a0`), its intensity, or any of the equivalent photon energy representations
+(`wavelength`, `frequency`, or `photon_energy`).
+If some parameters are missing, they are inferred where possible.
+
+# Keyword Arguments
+
+* `a0::Real = nothing`: Classical nonlinearity parameter (dimensionless).
+  If not provided but `intensity` and `omega` (or its equivalents) are given, it is inferred.
+* `intensity::Quantity = nothing`: Laser intensity (e.g. `1e20u"W/cm^2"`).
+  Used to infer `a0` if not explicitly specified.
+* `wavelength::Quantity = nothing`: Laser wavelength (e.g. `800u"nm"`).
+  Used to infer photon energy if `frequency` or `photon_energy` are not given.
+* `frequency::Quantity = nothing`: Laser frequency (alternative to wavelength).
+  Used to infer photon energy if `wavelength` or `photon_energy` are not given.
+* `photon_energy::Quantity = nothing`: Photon energy in eV (preferred).
+  Used directly if provided; otherwise inferred from `frequency` or `wavelength`.
+* `omega::Quantity = photon_energy`: Alias for `photon_energy`, for consistency with natural-unit notation.
+* `alpha::Real = nothing`: Polar angle of the laser propagation direction (in radians).
+  If not provided, it is derived from `unit_wavevector` if available.
+* `unit_wavevector::AbstractVector = nothing`: 3D propagation direction of the laser.
+  Used to infer the polar angle `alpha`.
+
+# Behavior
+
+At least one of `photon_energy`, `frequency`, or `wavelength` must be specified.
+If `a0` is omitted but `intensity` is provided, it is inferred.
+
+# Returns
+
+A fully constructed [`LaserBeam`](@ref) object with:
+
+* and a valid ``a_0`` parameter.
+* propagation polar angle (``\\alpha``),
+* photon energy ``\\omega`` (converted to eV),
+
+# Throws
+
+* `ArgumentError` if insufficient information is provided to determine photon energy.
+
+# Example
+
+```julia
+# Construct from wavelength and intensity
+L1 = laserbeam(wavelength = 800u"nm", intensity = 1e20u"W/cm^2", alpha = π/3)
+
+# Construct from photon energy and direction vector
+L2 = laserbeam(photon_energy = 1.55u"eV", unit_wavevector = [0, 0, 1], a0 = 1.0)
+
+# Construct from frequency and intensity
+L3 = laserbeam(frequency = 3.75e14u"Hz", intensity = 5e19u"W/cm^2")
+```
+
+"""
 function laserbeam(;
         a0 = nothing,
         intensity = nothing,
@@ -120,6 +201,11 @@ Return the dimensionless laser strength parameter ``a_0``.
 """
 classical_nonlinearity_parameter(L::LaserBeam) = L.a0
 
+"""
+    polar_angle(L::LaserBeam)
+
+Return polar angle w.r.t. the z-axis of the laser propagation direction.
+"""
 polar_angle(L::LaserBeam) = L.alpha
 
 ### Derived quantities
@@ -131,6 +217,11 @@ Return the normalized propagation direction of the laser beam as a 3D vector.
 """
 unit_wavevector(L::LaserBeam) = _unit_vec(L.alpha)
 
+"""
+    wavelength(L::LaserBeam)
+
+Return the wavelength associated with the laser beam (in ``\\mu\\mathrm{m}``}).
+"""
 function wavelength(L::LaserBeam)
     photon_energy = uconvert(u"J", L.omega)
     lambda = Unitful.c0 * Unitful.h / photon_energy |> u"µm"
