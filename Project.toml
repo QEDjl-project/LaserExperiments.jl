@@ -3,5 +3,24 @@ uuid = "eb1875a3-6e0d-577e-a250-3e610cb08925"
 authors = ["Uwe Hernandez Acosta <u.hernandez@hzdr.de>"]
 version = "0.1.0"
 
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+QEDbase = "10e22c08-3ccb-4172-bfcf-7d7aa3d04d93"
+QEDcore = "35dc0263-cb5f-4c33-a114-1d7f54ab753e"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [compat]
+LinearAlgebra = "1.11.0"
+QEDbase = "0.4.0"
+QEDcore = "0.3.0"
+StaticArrays = "1.9.15"
+Unitful = "1.25.0"
 julia = "1.10"
+
+[extras]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Random", "Test"]
