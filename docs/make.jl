@@ -29,4 +29,8 @@ makedocs(;
     pages = ["index.md"; numbered_pages],
 )
 
-deploydocs(; devbranch = "main", repo = "github.com/QEDjl-project/LaserExperiments.jl")
+deploydocs(;
+    devbranch = "main",
+    repo = "github.com/QEDjl-project/LaserExperiments.jl",
+    push_preview = true
+)
