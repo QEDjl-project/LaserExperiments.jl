@@ -12,10 +12,25 @@ const numbered_pages = [
 makedocs(;
     modules = [LaserExperiments],
     authors = "Uwe Hernandez Acosta <u.hernandez@hzdr.de>",
-    repo = "https://github.com/QEDjl-project/LaserExperiments.jl/blob/{commit}{path}#{line}",
+    repo = Documenter.Remotes.GitHub("QEDjl-project", "LaserExperiments.jl"),
     sitename = "LaserExperiments.jl",
-    format = Documenter.HTML(; canonical = "https://QEDjl-project.github.io/LaserExperiments.jl"),
+    #format = Documenter.HTML(; canonical = "https://QEDjl-project.github.io/LaserExperiments.jl"),
+    format = Documenter.HTML(;
+        prettyurls = get(ENV, "CI", "false") == "true",
+        canonical = "https://qedjl-project.gitlab.io/LaserExperiments.jl",
+        assets = String[],
+        mathengine = Documenter.MathJax2(),
+        collapselevel = 1,
+        edit_link = :commit,
+        # TODO: workaround
+        # should be fixed: https://github.com/QEDjl-project/QEDbase.jl/issues/4
+        size_threshold_ignore = ["index.md"],
+    ),
     pages = ["index.md"; numbered_pages],
 )
 
-deploydocs(; repo = "github.com/QEDjl-project/LaserExperiments.jl")
+deploydocs(;
+    devbranch = "main",
+    repo = "github.com/QEDjl-project/LaserExperiments.jl",
+    push_preview = true
+)

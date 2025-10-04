@@ -1,13 +1,22 @@
 module LaserExperiments
 
-# I am a test
+hello_world() = "Hello, World!"
 
-"""
-    hi = hello_world()
-A simple function to return "Hello, World!"
-"""
-function hello_world()
-    return "Hello, World!"
-end
+# laser beams
+export LaserBeam, laserbeam
+export classical_nonlinearity_parameter, photon_energy, polar_angle
+export wavelength, unit_wavevector, intensity, frequency, four_momentum
+
+using Unitful
+using LinearAlgebra
+using StaticArrays
+using QEDcore
+
+abstract type AbstractBeam end
+
+include("units.jl")
+
+include("beams/laser.jl")
+
 
 end
