@@ -1,5 +1,7 @@
 module LaserExperiments
 
+# this line tests the test coverage
+
 hello_world() = "Hello, World!"
 
 # laser beams

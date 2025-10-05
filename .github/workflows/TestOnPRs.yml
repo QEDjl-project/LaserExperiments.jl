@@ -23,7 +23,7 @@ jobs:
       os: ${{ matrix.os }}
       version: ${{ matrix.version }}
       arch: ${{ matrix.arch }}
-      allow_failure: ${{ matrix.allow_failure }}
+      allow_failure: ${{ matrix.version == 'pre'}}
       run_codecov: ${{ matrix.version == '1' && matrix.os == 'ubuntu-latest' }}
     secrets:
       codecov_token: ${{ secrets.CODECOV_TOKEN }}
@@ -32,10 +32,8 @@ jobs:
       matrix:
         version:
           - "lts"
-          - "1.11"
-          - "1.12"
+          - "1"
         os:
           - ubuntu-latest
         arch:
           - x64
-        allow_failure: [false]
