@@ -1,6 +1,8 @@
 using LaserExperiments
 using Test
 
+using Unitful
+include("utils.jl")
 #=
 Don't add your tests to runtests.jl. Instead, create files named
 

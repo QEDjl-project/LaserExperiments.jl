@@ -1,33 +1,16 @@
 using Test
 using Unitful
 using Random
-using QEDbase
 using QEDcore
 using StaticArrays
 using LinearAlgebra
-using LaserExperiments  # your package
+using LaserExperiments
 
 RNG = Xoshiro(161)
 
 A0_ARR = (0.0, 1.0e-4, 1.0, 10.0, 100.0)
 ALPHA_ARR = (0.0, rand(RNG) * pi, Float64(pi))
 OMEGA_ARR = (1.0e-2, 1.0, rand(RNG), 1.0e3, 1.0e6) .* 1u"eV"
-
-_frequency_from_energy(omega) = omega / Unitful.h |> u"Hz"
-_wavelength_from_energy(omega) = Unitful.h * Unitful.c0 / omega |> u"µm"
-function _intensity_from_a0(a0, omega)
-    omega_over_eV = ustrip(uconvert(u"eV", omega))
-    return (a0 * omega_over_eV / 7.5)^2 * 1.0e20u"W/cm^2"
-end
-function _unit_vec(polar, azimuth = zero(polar))
-    sth, cth = sincos(polar)
-    sphi, cphi = sincos(azimuth)
-    return SVector(
-        cphi * sth,
-        sphi * sth,
-        cth
-    )
-end
 
 @inline function _check_laser_beam(laser, a0, omega, alpha)
     @test isapprox(classical_nonlinearity_parameter(laser), a0)
@@ -37,7 +20,9 @@ end
     @test unit(photon_energy(laser)) == u"eV"
 
     @test isapprox(polar_angle(laser), alpha)
-    return @test unit(polar_angle(laser)) == NoUnits
+    @test unit(polar_angle(laser)) == NoUnits
+
+    return nothing
 end
 
 @testset "a0 = $A0, omega=$OMEGA, alpha=$ALPHA" for (A0, OMEGA, ALPHA) in Iterators.product(
