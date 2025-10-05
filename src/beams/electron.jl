@@ -40,7 +40,14 @@ end
 ### Extended Constructor
 
 """
-    electronbeam(; energy, gamma, beta, p_mag, alpha, unit_direction)
+    electronbeam(;
+        energy,
+        lorentz_factor[=gamma],
+        boost_factor[=beta],
+        p_mag,
+        polar_angle[=alpha],
+        unit_direction
+    )
 
 Create an [`ElectronBeam`](@ref) object from physically meaningful parameters.
 
@@ -51,24 +58,24 @@ If some parameters are missing, they are inferred self-consistently from the rel
 # Keyword Arguments
 
 * `energy::Quantity = nothing`: Total energy (including rest mass), e.g. `10u"GeV"`.
-* `gamma::Real = nothing`: Lorentz factor, ``\\gamma = E / (ME_eV c^2)``.
-* `beta::Real = nothing`: Dimensionless velocity, ``\\beta = \\sqrt{1 - 1/\\gamma^2}``.
+* `lorentz_factor::Real = nothing`: Lorentz factor, ``\\gamma = E / (m_e c^2)``. Alias is `gamma`.
+* `boost_factor::Real = nothing`: Dimensionless velocity, ``\\beta = \\sqrt{1 - 1/\\gamma^2}``. Alias is `beta`.
 * `p_mag::Quantity = nothing`: Magnitude of three-momentum (in eV, natural units).
-* `alpha::Real = nothing`: Polar angle (radians) defining propagation direction.
+* `polar_angle::Real = nothing`: Polar angle (radians) defining propagation direction. Alias is `alpha`.
   If not given, it is inferred from `unit_direction`.
 * `unit_direction::AbstractVector = nothing`: 3D propagation direction vector.
   Used to infer `alpha`.
 
 # Behavior
 
-At least one of `energy`, `gamma`, or `p_mag` must be specified.
-If several are given, they are cross-checked for physical consistency.
+At least one of `energy`, `gamma`, `beta`, or `p_mag` must be specified.
+If several are given, an ArgumentError is thrown.
 
 # Returns
 
 A fully constructed [`ElectronBeam`](@ref) with:
-- total energy ``E``,
-- polar angle ``\\alpha``.
+- total energy ``E`` (inferred if needed),
+- polar angle ``\\alpha`` (inferred if needed).
 
 # Throws
 
@@ -81,8 +88,8 @@ A fully constructed [`ElectronBeam`](@ref) with:
 # Construct from total energy and polar angle
 E1 = electronbeam(energy = 10u"GeV", alpha = π/3)
 
-# Construct from gamma factor
-E2 = electronbeam(gamma = 2e4, unit_direction = [0, 0, 1])
+# Construct from lorentz_factor factor
+E2 = electronbeam(lorentz_factor= 2e4, unit_direction = [0, 0, 1])
 
 # Construct from momentum magnitude
 E3 = electronbeam(p_mag = 10u"GeV", alpha = π/6)
@@ -91,11 +98,14 @@ E3 = electronbeam(p_mag = 10u"GeV", alpha = π/6)
 """
 function electronbeam(;
         energy = nothing,
-        gamma = nothing,
-        beta = nothing,
+        lorentz_factor = nothing,
+        boost_factor = nothing,
         p_mag = nothing,
-        alpha = nothing,
-        unit_direction = nothing
+        polar_angle = nothing,
+        unit_direction = nothing,
+        gamma = lorentz_factor,
+        alpha = polar_angle,
+        beta = boost_factor
     )
     # Infer propagation direction
     if alpha == nothing
@@ -126,7 +136,6 @@ function electronbeam(;
             # --- Case 3: start from p_mag ---
             p_mag = ustrip(mynatural(p_mag))
             me = ustrip(ME_eV)
-            #E_val = sqrt((ustrip(p_mag))^2 + (ustrip(ME_eV))^2) * u"eV"
             energy = sqrt(p_mag^2 + me^2) * u"eV"
         else
             throw(
@@ -162,7 +171,7 @@ polar_angle(E::ElectronBeam) = E.alpha
 """
     lorentz_factor(E::ElectronBeam)
 
-Return the Lorentz factor `\\gamma = E / (ME_eV c^2)`.
+Return the Lorentz factor `\\gamma = E / (m_e c^2)`.
 """
 lorentz_factor(E::ElectronBeam) = ustrip(total_energy(E) / ME_eV)
 
@@ -180,14 +189,12 @@ end
     momentum_magnitude(E::ElectronBeam)
 
 Return the absolute value of the three-momentum |p| in eV (natural units),
-computed from the on-shell relation `p = \\sqrt{E^2 - ME_eV^2}`.
+computed from the on-shell relation `p = \\sqrt{E^2 - m_e^2}`.
 """
 function momentum_magnitude(E::ElectronBeam)
 
-    #E_eV = ustrip(total_energy(E))
     En = ustrip(total_energy(E))
     me = ustrip(ME_eV)
-    #ME_eV = ustrip(ME)
     return sqrt((En - me) * (En + me)) * u"eV"
 end
 
@@ -201,9 +208,9 @@ unit_direction(E::ElectronBeam) = _unit_vec(E.alpha)
 """
     four_momentum(E::ElectronBeam)
 
-Return the four-momentum of the electron beam in natural units:
+Return the four-momentum of the electron beam in eV:
 
-`p^\\mu = (E, \\vec{p})`
+``p^\\mu = (E, \\vec{p})``
 
 where `E` is the total energy and `\\vec{p}` points along the propagation direction.
 """
