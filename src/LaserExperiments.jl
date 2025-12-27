@@ -1,9 +1,5 @@
 module LaserExperiments
 
-# this line tests the test coverage
-
-hello_world() = "Hello, World!"
-
 # constants
 export ME_eV
 
