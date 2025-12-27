@@ -6,8 +6,9 @@ project_path = Base.Filesystem.joinpath(Base.Filesystem.dirname(Base.source_path
 Pkg.develop(; path = project_path)
 
 using Documenter
-
 using LaserExperiments
+
+DocMeta.setdocmeta!(LaserExperiments, :DocTestSetup, :(using LaserExperiments); recursive = true)
 
 # some paths for links
 readme_path = joinpath(project_path, "README.md")
