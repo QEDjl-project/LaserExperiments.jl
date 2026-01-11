@@ -6,7 +6,7 @@ export ME_eV
 # laser beams
 export LaserParameters, laserparameter
 export classical_nonlinearity_parameter, photon_energy, pulse_duration, pulse_energy, repetition_rate, coherence_length, polarization_ratio
-#export wavelength, unit_wavevector, intensity, frequency, four_momentum
+export wavelength, intensity, frequency, average_power
 
 # electron beam
 export ElectronBeam, electronbeam

@@ -145,4 +145,7 @@ function laserparameter(;
     )
 end
 
+intensity(l::LaserParameters) = _compute_intensity_from_omega(l.a0, l.photon_energy)
+frequency(l::LaserParameters) = l.photon_energy / Unitful.h |> u"Hz"
+wavelength(l::LaserParameters) = Unitful.h * Unitful.c0 / l.photon_energy |> u"µm"
 average_power(l::LaserParameters) = l.pulse_energy * l.repetition_rate

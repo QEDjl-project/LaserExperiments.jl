@@ -77,121 +77,6 @@ POL_RATIOS = [
         end
     end
 
-    #=
-        laserparameter(;
-                          a0 = nothing,
-                          intensity = nothing,
-
-                          wavelength = nothing,
-                          frequency = nothing,
-                          photon_energy = nothing,
-                          omega = photon_energy,
-
-                          pulse_duration = nothing,
-                          coherence_length = nothing,
-                          polarization_ratio = (one(Float64), one(Float64)),
-
-                          pulse_energy = nothing,
-                          average_power = nothing,
-                          repetition_rate = nothing,
-                          )
-
-    end
-    @testset "LaserBeam keyword constructor inference" begin
-
-        @testset "photon_energy" begin
-            INTENSITY = _intensity_from_a0(A0, OMEGA)
-            UNIT_WAVEVECTOR = _unit_vec(ALPHA)
-
-            L = laserbeam(a0 = A0, photon_energy = OMEGA, alpha = ALPHA)
-            _check_laser_beam(L, A0, OMEGA, ALPHA)
-
-            L2 = laserbeam(intensity = INTENSITY, photon_energy = OMEGA, alpha = ALPHA)
-            _check_laser_beam(L2, A0, OMEGA, ALPHA)
-
-            L3 = laserbeam(a0 = A0, photon_energy = OMEGA, unit_wavevector = UNIT_WAVEVECTOR)
-            _check_laser_beam(L3, A0, OMEGA, ALPHA)
-
-            L4 = laserbeam(intensity = INTENSITY, photon_energy = OMEGA, unit_wavevector = UNIT_WAVEVECTOR)
-            _check_laser_beam(L4, A0, OMEGA, ALPHA)
-
-            # alias: photon_energy==omega
-            L5 = laserbeam(a0 = A0, omega = OMEGA, alpha = ALPHA)
-            _check_laser_beam(L5, A0, OMEGA, ALPHA)
-
-            L6 = laserbeam(intensity = INTENSITY, omega = OMEGA, alpha = ALPHA)
-            _check_laser_beam(L6, A0, OMEGA, ALPHA)
-
-            L7 = laserbeam(a0 = A0, omega = OMEGA, unit_wavevector = UNIT_WAVEVECTOR)
-            _check_laser_beam(L7, A0, OMEGA, ALPHA)
-
-            L8 = laserbeam(intensity = INTENSITY, omega = OMEGA, unit_wavevector = UNIT_WAVEVECTOR)
-            _check_laser_beam(L8, A0, OMEGA, ALPHA)
-        end
-
-        @testset "frequency" begin
-            FREQUENCY = _frequency_from_energy(OMEGA)
-            INTENSITY = _intensity_from_a0(A0, OMEGA)
-            UNIT_WAVEVECTOR = _unit_vec(ALPHA)
-
-            L = laserbeam(a0 = A0, frequency = FREQUENCY, alpha = ALPHA)
-            _check_laser_beam(L, A0, OMEGA, ALPHA)
-
-            L2 = laserbeam(intensity = INTENSITY, frequency = FREQUENCY, alpha = ALPHA)
-            _check_laser_beam(L2, A0, OMEGA, ALPHA)
-
-            L3 = laserbeam(a0 = A0, frequency = FREQUENCY, unit_wavevector = UNIT_WAVEVECTOR)
-            _check_laser_beam(L3, A0, OMEGA, ALPHA)
-
-            L4 = laserbeam(intensity = INTENSITY, frequency = FREQUENCY, unit_wavevector = UNIT_WAVEVECTOR)
-            _check_laser_beam(L4, A0, OMEGA, ALPHA)
-        end
-
-        @testset "wavelength" begin
-            WAVELENGTH = _wavelength_from_energy(OMEGA)
-            INTENSITY = _intensity_from_a0(A0, OMEGA)
-            UNIT_WAVEVECTOR = _unit_vec(ALPHA)
-
-            L = laserbeam(a0 = A0, wavelength = WAVELENGTH, alpha = ALPHA)
-            _check_laser_beam(L, A0, OMEGA, ALPHA)
-
-            L2 = laserbeam(intensity = INTENSITY, wavelength = WAVELENGTH, alpha = ALPHA)
-            _check_laser_beam(L2, A0, OMEGA, ALPHA)
-
-            L3 = laserbeam(a0 = A0, wavelength = WAVELENGTH, unit_wavevector = UNIT_WAVEVECTOR)
-            _check_laser_beam(L3, A0, OMEGA, ALPHA)
-
-            L4 = laserbeam(intensity = INTENSITY, wavelength = WAVELENGTH, unit_wavevector = UNIT_WAVEVECTOR)
-            _check_laser_beam(L4, A0, OMEGA, ALPHA)
-        end
-    end
-
-    @testset "Derived quantities" begin
-        L = LaserBeam(A0, OMEGA, ALPHA)
-
-        # groundtruths
-        FREQUENCY = _frequency_from_energy(OMEGA)
-        WAVELENGTH = _wavelength_from_energy(OMEGA)
-        INTENSITY = _intensity_from_a0(A0, OMEGA)
-        UNIT_WAVEVECTOR = _unit_vec(ALPHA)
-        FOUR_MOMENTUM = OMEGA * SLorentzVector(1.0, _unit_vec(ALPHA)...)
-
-        @test isapprox(frequency(L), FREQUENCY)
-        @test unit(frequency(L)) == u"Hz"
-
-        @test isapprox(wavelength(L), WAVELENGTH)
-        @test unit(wavelength(L)) == u"µm"
-
-        @test isapprox(intensity(L), INTENSITY)
-        @test unit(intensity(L)) == u"W/cm^2"
-
-        @test isapprox(unit_wavevector(L), UNIT_WAVEVECTOR)
-
-        # FIXME: implement extension for QEDcore to use Unitful.Quantity properly
-        #@test isapprox(four_momentum(L), FOUR_MOMENTUM)
-        #@test all(unit.(four_momentum(L)) .== u"eV")
-    end
-    =#
 end
 
 @testset "LaserParameters keyword constructor" begin
@@ -270,19 +155,28 @@ end
                 _check_laser_beam(L, a0, ph_en, pu_en, pu_du, rep_rate, coh_len, pol_ratio)
             end
         end
+
+        @testset "derived quantities" begin
+            L = laserparameter(;
+                a0 = a0,
+                photon_energy = ph_en,
+                pulse_energy = pu_en,
+                pulse_duration = pu_du,
+                repetition_rate = rep_rate,
+                coherence_length = coh_len,
+                polarization_ratio = pol_ratio,
+            )
+
+            INTENSITY = _intensity_from_a0(a0, ph_en)
+            @test isapprox(intensity(L), INTENSITY)
+            FREQUENCY = _frequency_from_energy(ph_en)
+            @test isapprox(frequency(L), FREQUENCY)
+            WAVELENGTH = _wavelength_from_energy(ph_en)
+            @test isapprox(wavelength(L), WAVELENGTH)
+            if (ismissing(pu_en) && ismissing(rep_rate)) || (!ismissing(pu_en) && !ismissing(rep_rate))
+                AVERAGE_POWER = _average_power_from_pulse_energy(pu_en, rep_rate)
+                _check_isapprox_quantity(average_power(L), AVERAGE_POWER)
+            end
+        end
     end
 end
-#=
-@testset "invalid input" begin
-
-    # wrong a0
-    @test_throws ArgumentError LaserBeam(-1.0, 1.0u"eV", 0.0)
-
-    # wrong omega
-    @test_throws ArgumentError LaserBeam(1.0, -1.0u"eV", 0.0)
-
-    # wrong alpha
-    @test_throws ArgumentError LaserBeam(1.0, 1.0u"eV", -1.0)
-    @test_throws ArgumentError LaserBeam(1.0, 1.0u"eV", 1.1 * pi)
-end
-=#
