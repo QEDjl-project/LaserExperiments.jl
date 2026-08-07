@@ -4,13 +4,13 @@ module LaserExperiments
 export ME_eV
 
 # laser beams
-export LaserBeam, laserbeam
-export classical_nonlinearity_parameter, photon_energy, polar_angle
-export wavelength, unit_wavevector, intensity, frequency, four_momentum
+export LaserParameters, laserparameter
+export classical_nonlinearity_parameter, photon_energy, pulse_duration, pulse_energy, repetition_rate, coherence_length, polarization_ratio
+export wavelength, intensity, frequency, average_power
 
 # electron beam
 export ElectronBeam, electronbeam
-export lorentz_factor, beta, momentum_magnitude, unit_direction, four_momentum, total_energy
+export lorentz_factor, beta, momentum_magnitude, unit_direction, four_momentum, total_energy, polar_angle
 
 using Unitful
 using LinearAlgebra
@@ -23,7 +23,8 @@ include("units.jl")
 include("constants.jl")
 
 include("beams/utils.jl")
-include("beams/laser.jl")
+include("beams/laser/utils.jl")
+include("beams/laser/parameter.jl")
 include("beams/electron.jl")
 
 
